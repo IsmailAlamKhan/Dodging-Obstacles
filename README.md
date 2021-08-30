@@ -5,10 +5,7 @@ This is my first game made using Unity hope you guys like it.
 
 
 Currently This game only supports windows and web.
-
- 	To play the windows version go to 
-
-[releases]: https://github.com/IsmailAlamKhan/Dodging-Obstacles/releases
+  To play the windows version https://github.com/IsmailAlamKhan/Dodging-Obstacles/releases
 
 ​	 To use the web version https://dodging-obstacles-by-ismail.netlify.app/
 
