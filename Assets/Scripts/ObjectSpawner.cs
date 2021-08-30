@@ -6,28 +6,36 @@ public class ObjectSpawner : Base
     public Transform player;
     public GameObject[] objects;
     public Vector3 spawnPos;
+    public Transform surface;
+
+    override public void Start()
+    {
+        base.Start();
+        Spawn();
+    }
 
     void Update()
     {
 
         float distanceToPlayer = Vector3.Distance(player.position, spawnPos);
-        if (distanceToPlayer < 80)
+        float spawnDis = Random.Range(0, 40 - (gameManager.score / 500));
+
+        if (distanceToPlayer < spawnDis)
         {
-            SpawnObject();
+            Spawn();
         }
     }
 
-    void SpawnObject()
+    public void Spawn()
     {
         GameObject newObject = objects[Random.Range(0, objects.Length)];
-        Vector3 newObjectTransform = newObject.gameObject.transform.position;
-        spawnPos = new Vector3(newObjectTransform.x, newObjectTransform.y, spawnPos.z + Random.Range(20, 40));
+        float max = (surface.localScale.x - 4) - newObject.transform.localScale.x;
+
+        spawnPos = new Vector3(Random.Range(-max, max), surface.localPosition.x + 1, spawnPos.z + Random.Range(20, 40));
+
         if (gameManager.gameIsRunning())
         {
-            if (player.position.z > 280)
-            {
-                Instantiate(newObject, spawnPos, Quaternion.identity);
-            }
+            Instantiate(newObject, spawnPos, Quaternion.identity);
         }
     }
 }

@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     public Button playButton;
     public AudioMixer audioMixer;
     bool willRestart = false;
-    float score = 0f;
+    public float score = 0f;
     GameState gameState = GameState.idle;
     public bool gameIsRunning() => gameState == GameState.playing;
     public float fogIncreaseDensity = 0.0f;
@@ -76,8 +76,7 @@ public class GameManager : MonoBehaviour
         {
 
             RenderSettings.fogDensity += Mathf.Clamp(Time.deltaTime * fogIncreaseDensity, 0.0f, 0.2f);
-            Debug.Log(RenderSettings.fogDensity);
-            Debug.Log(RenderSettings.fog);
+
         }
     }
     void Start()
@@ -99,7 +98,6 @@ public class GameManager : MonoBehaviour
         });
         float volume = 0.0f;
         audioMixer.GetFloat("volume", out volume);
-        Debug.Log(volume);
         volumeSlider.value = volume;
     }
     float Remap(float value, float min1, float max1, float min2, float max2)
@@ -118,6 +116,8 @@ public class GameManager : MonoBehaviour
         scoreText.gameObject.SetActive(true);
         RenderSettings.fog = true;
         RenderSettings.fogDensity = 0.0f;
+        ObjectSpawner spawner = FindObjectOfType<ObjectSpawner>();
+        spawner.Spawn();
         Debug.Log("Game Started");
     }
 
