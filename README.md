@@ -12,5 +12,5 @@ Currently This game only supports windows and web.
 
 ​	 To use the web version https://dodging-obstacles-by-ismail.netlify.app/
 
-Play the game using left and right arrows or a and d arrow.  You can change the volumn or the speed of the box by pausing the game using ESC key.
+Play the game using left and right arrows or a and d arrow.  You can change the volume or the speed of the box by pausing the game using ESC key.
 
