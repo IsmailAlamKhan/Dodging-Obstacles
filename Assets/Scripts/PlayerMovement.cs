@@ -12,14 +12,16 @@ public class PlayerMovement : Base
 
     void FixedUpdate()
     {
-        rb.AddForce(0, 0, forwardForce * Time.deltaTime);
+        float _forwardForce = forwardForce * gameManager.speedMultiplier;
+        float _sidewaysForce = sidewaysForce * gameManager.speedMultiplier;
+        rb.AddForce(0, 0, _forwardForce * Time.deltaTime);
         if (isMovingLeft)
         {
-            rb.AddForce(-sidewaysForce * Time.deltaTime, 0, 0, ForceMode.VelocityChange);
+            rb.AddForce(-_sidewaysForce * Time.deltaTime, 0, 0, ForceMode.VelocityChange);
         }
         if (isMovingRight)
         {
-            rb.AddForce(sidewaysForce * Time.deltaTime, 0, 0, ForceMode.VelocityChange);
+            rb.AddForce(_sidewaysForce * Time.deltaTime, 0, 0, ForceMode.VelocityChange);
         }
         if (rb.position.y < -1f)
         {

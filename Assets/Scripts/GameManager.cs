@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 enum GameState
 {
     playing,
+    paused,
     gameOver,
     idle,
 }
@@ -17,10 +19,37 @@ public class GameManager : MonoBehaviour
     public AudioSource gameOverAudio;
     public AudioSource bgMusic;
     public Button playButton;
-
+    public AudioMixer audioMixer;
     bool willRestart = false;
-    double score = 0;
+    float score = 0f;
     GameState gameState = GameState.idle;
+    public bool gameIsRunning() => gameState == GameState.playing;
+    public float fogIncreaseDensity = 0.0f;
+    public GameObject pause;
+    public Slider volumeSlider;
+    public float speedMultiplier = 1.0f;
+    public void SetSpeedMultiplier(float speed)
+    {
+        speedMultiplier = speed;
+    }
+    public void PauseGame()
+    {
+        pause.SetActive(true);
+
+        player.rb.velocity = Vector3.zero;
+        player.rb.angularVelocity = Vector3.zero;
+        player.enabled = false;
+        gameState = GameState.paused;
+        bgMusic.Pause();
+    }
+    public void ResumeGame()
+    {
+        pause.SetActive(false);
+        player.enabled = true;
+        gameState = GameState.playing;
+        bgMusic.Play();
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
@@ -30,20 +59,35 @@ public class GameManager : MonoBehaviour
                 StartGame();
             }
         }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (gameState == GameState.playing)
+            {
 
+                PauseGame();
+            }
+            else if (gameState == GameState.paused)
+            {
+                ResumeGame();
+            }
+        }
+
+        if (gameState == GameState.playing)
+        {
+
+            RenderSettings.fogDensity += Mathf.Clamp(Time.deltaTime * fogIncreaseDensity, 0.0f, 0.2f);
+            Debug.Log(RenderSettings.fogDensity);
+            Debug.Log(RenderSettings.fog);
+        }
     }
     void Start()
     {
-        Debug.Log($"GameManager Start {willRestart}");
-        if (willRestart)
-        {
-            StartGame();
-        }
+        finalScoreText.text = "";
+        scoreText.text = "";
         player.enabled = false;
         playButton.gameObject.SetActive(true);
         playButton.onClick.AddListener(() =>
         {
-            Debug.Log($"Playbutton Pressed. Restart: {willRestart}");
             if (!willRestart)
             {
                 StartGame();
@@ -53,6 +97,14 @@ public class GameManager : MonoBehaviour
                 RestartGame();
             }
         });
+        float volume = 0.0f;
+        audioMixer.GetFloat("volume", out volume);
+        Debug.Log(volume);
+        volumeSlider.value = volume;
+    }
+    float Remap(float value, float min1, float max1, float min2, float max2)
+    {
+        return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
     }
     void StartGame()
     {
@@ -64,6 +116,8 @@ public class GameManager : MonoBehaviour
         bgMusic.Play();
         playButton.gameObject.SetActive(false);
         scoreText.gameObject.SetActive(true);
+        RenderSettings.fog = true;
+        RenderSettings.fogDensity = 0.0f;
         Debug.Log("Game Started");
     }
 
@@ -75,7 +129,7 @@ public class GameManager : MonoBehaviour
         gameOverAudio.Play();
         InitiallizeRestart();
     }
-    public void UpdateScore(double newScore)
+    public void UpdateScore(float newScore)
     {
         if (gameState == GameState.playing)
         {
@@ -108,5 +162,10 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("You Win");
         InitiallizeRestart(true);
+    }
+
+    public void SetVolume(float volume)
+    {
+        audioMixer.SetFloat("volume", volume);
     }
 }
