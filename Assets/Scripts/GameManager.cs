@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
+using System;
+
 enum GameState
 {
     playing,
@@ -12,6 +14,8 @@ enum GameState
 
 public class GameManager : MonoBehaviour
 {
+    private String _volumeKey = "volume";
+    private String _speedMultiplyerKey = "speed_multiplyer";
     public Text scoreText;
     public Text finalScoreText;
 
@@ -27,11 +31,20 @@ public class GameManager : MonoBehaviour
     public float fogIncreaseDensity = 0.0f;
     public GameObject pause;
     public Slider volumeSlider;
+    public Slider speedSlider;
     public float speedMultiplier = 1.0f;
     public void SetSpeedMultiplier(float speed)
     {
         speedMultiplier = speed;
+        PlayerPrefs.SetFloat(_speedMultiplyerKey, speed);
     }
+
+    void getSpeedMultiplier()
+    {
+        speedMultiplier = PlayerPrefs.GetFloat(_speedMultiplyerKey, 1.0f);
+        speedSlider.value = speedMultiplier;
+    }
+
     public void PauseGame()
     {
         pause.SetActive(true);
@@ -50,13 +63,20 @@ public class GameManager : MonoBehaviour
         bgMusic.Play();
     }
 
-    void Update()
+    void keyPressEvents()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
         {
             if (gameState == GameState.idle)
             {
                 StartGame();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (gameState == GameState.gameOver)
+            {
+                RestartGame();
             }
         }
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -71,12 +91,15 @@ public class GameManager : MonoBehaviour
                 ResumeGame();
             }
         }
+    }
 
+    void Update()
+    {
+        keyPressEvents();
         if (gameState == GameState.playing)
         {
 
             RenderSettings.fogDensity += Mathf.Clamp(Time.deltaTime * fogIncreaseDensity, 0.0f, 0.2f);
-
         }
     }
     void Start()
@@ -96,13 +119,9 @@ public class GameManager : MonoBehaviour
                 RestartGame();
             }
         });
-        float volume = 0.0f;
-        audioMixer.GetFloat("volume", out volume);
-        volumeSlider.value = volume;
-    }
-    float Remap(float value, float min1, float max1, float min2, float max2)
-    {
-        return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+        SetVolume(PlayerPrefs.GetFloat(_volumeKey, 0f));
+        getSpeedMultiplier();
+        getVolumn();
     }
     void StartGame()
     {
@@ -167,5 +186,13 @@ public class GameManager : MonoBehaviour
     public void SetVolume(float volume)
     {
         audioMixer.SetFloat("volume", volume);
+        PlayerPrefs.SetFloat(_volumeKey, volume);
+    }
+
+    void getVolumn()
+    {
+        float volume = 0.0f;
+        audioMixer.GetFloat("volume", out volume);
+        volumeSlider.value = volume;
     }
 }

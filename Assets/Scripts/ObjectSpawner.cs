@@ -29,13 +29,16 @@ public class ObjectSpawner : Base
     public void Spawn()
     {
         GameObject newObject = objects[Random.Range(0, objects.Length)];
-        float max = (surface.localScale.x - 4) - newObject.transform.localScale.x;
+        float surfaceWidthInHalf = (surface.localScale.x / 2) - 2;
+        float newObjectWidth = newObject.transform.localScale.x;
+        float x = Random.Range(-surfaceWidthInHalf, surfaceWidthInHalf);
 
-        spawnPos = new Vector3(Random.Range(-max, max), surface.localPosition.x + 1, spawnPos.z + Random.Range(20, 40));
+
+        spawnPos = new Vector3(x, surface.transform.localScale.y + newObject.transform.localScale.y, spawnPos.z + Random.Range(20, 40));
 
         if (gameManager.gameIsRunning())
         {
-            Instantiate(newObject, spawnPos, Quaternion.identity);
+            Instantiate(newObject, spawnPos, newObject.transform.rotation);
         }
     }
 }
