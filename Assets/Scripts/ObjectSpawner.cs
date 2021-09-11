@@ -7,11 +7,13 @@ public class ObjectSpawner : Base
     public GameObject[] objects;
     public Vector3 spawnPos;
     public Transform surface;
+    private GameObject parent;
 
     override public void Start()
     {
         base.Start();
         Spawn();
+        parent = new GameObject("Obstacles");
     }
 
     void Update()
@@ -30,7 +32,8 @@ public class ObjectSpawner : Base
     {
         GameObject newObject = objects[Random.Range(0, objects.Length)];
         float surfaceWidthInHalf = (surface.localScale.x / 2) - 2;
-        float newObjectWidth = newObject.transform.localScale.x;
+        float newObjectWidth = newObject.transform.localScale.x / 2;
+        surfaceWidthInHalf = surfaceWidthInHalf - newObjectWidth;
         float x = Random.Range(-surfaceWidthInHalf, surfaceWidthInHalf);
 
 
@@ -38,7 +41,8 @@ public class ObjectSpawner : Base
 
         if (gameManager.gameIsRunning())
         {
-            Instantiate(newObject, spawnPos, newObject.transform.rotation);
+            GameObject instantiatedObject = Instantiate(newObject, spawnPos, newObject.transform.rotation) as GameObject;
+            instantiatedObject.transform.parent = parent.transform;
         }
     }
 }

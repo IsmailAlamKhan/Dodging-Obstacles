@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     public Slider volumeSlider;
     public Slider speedSlider;
     public float speedMultiplier = 1.0f;
+
+    private bool isMute = false;
     public void SetSpeedMultiplier(float speed)
     {
         speedMultiplier = speed;
@@ -74,12 +76,13 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            if (gameState == GameState.gameOver)
-            {
-                RestartGame();
-            }
+            RestartGame();
         }
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Mute();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
         {
             if (gameState == GameState.playing)
             {
@@ -91,6 +94,21 @@ public class GameManager : MonoBehaviour
                 ResumeGame();
             }
         }
+    }
+    void Mute()
+    {
+        isMute = !isMute;
+        if (isMute)
+        {
+            volumeSlider.value = -80f;
+            SetVolume(-80f);
+        }
+        else
+        {
+            volumeSlider.value = 0f;
+            SetVolume(0f);
+        }
+
     }
 
     void Update()
